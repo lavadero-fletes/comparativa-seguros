@@ -129,11 +129,24 @@ tbody tr:hover{background:var(--ls-tint)}
 .fz h3{font-family:var(--disp);font-weight:800;font-size:15px;color:var(--ink);margin:0 0 6px}
 .fz p{margin:0 0 16px} .fz b{color:var(--ink)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* historico */
+.hsum{display:grid;grid-template-columns:repeat(4,1fr)}
+.hsum>div{padding:16px 20px;border-right:1px solid var(--line)}
+.hsum>div:last-child{border-right:0}
+.hsum .hv{font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:-.01em;line-height:1.1}
+.hsum .hl{font-size:11px;color:var(--mut);margin-top:4px}
+.f25{background:linear-gradient(90deg,#9FBEE6,#6E9AD2)}
+.sv.up{color:#8a5a00;background:#f7ecd4;border-color:#e8d9b2}
+.premios{font-size:11px;color:var(--mut);margin-top:8px}
+.pat2{font-weight:600;font-size:11px;color:var(--mut);margin-left:8px}
 @media(max-width:820px){
  .cos,.cov,.tfoot,.grid2{grid-template-columns:1fr}
  .co.sc,.cov .l,.tfoot .l{border-right:0;border-bottom:1px solid var(--line)}
  .lhead,.lrow{grid-template-columns:1.3fr 1fr 1fr} .lhead .dcol,.lrow .dcol{display:none}
  .hide-m{display:none} .reco .big{font-size:36px}
+ .hsum{grid-template-columns:1fr 1fr}
+ .hsum>div{border-bottom:1px solid var(--line)} .hsum>div:nth-child(even){border-right:0}
+ .hsum>div:nth-child(n+3){border-bottom:0}
 }
 </style></head>
 <body><div class="wrap">
@@ -185,6 +198,7 @@ tbody tr:hover{background:var(--ls-tint)}
   <button class="tab on" data-p="p1">Por razón social</button>
   <button class="tab" data-p="p2">Coberturas</button>
   <button class="tab" data-p="p3">Detalle (52)</button>
+  <button class="tab" data-p="p5">Histórico 2025–2027</button>
   <button class="tab" data-p="p4">Fuentes y método</button>
  </div>
 
@@ -242,6 +256,21 @@ tbody tr:hover{background:var(--ls-tint)}
   </div>
  </div>
 
+ <!-- P5 historico -->
+ <div class="panel" id="p5">
+  <h2 class="sec">Histórico de cotizaciones por vehículo</h2>
+  <p class="sub">Vehículos particulares · cuota mensual cotizada por año: San Cristóbal 2025 y 2026 vs La Segunda 2027</p>
+  <div class="card" style="margin-bottom:16px"><div class="hsum" id="hsum"></div></div>
+  <div class="legend">
+   <span><span class="dot" style="background:#6E9AD2"></span>San Cristóbal 2025</span>
+   <span><span class="dot" style="background:var(--sc)"></span>San Cristóbal 2026</span>
+   <span><span class="dot" style="background:var(--ls)"></span>La Segunda 2027</span>
+   <input class="search" id="hq" placeholder="buscar patente, modelo o dueño…" style="margin-left:auto">
+  </div>
+  <div class="card" id="hist"></div>
+  <p class="sub" style="margin-top:12px">«Cuota» es la cuota mensual cotizada cada año; «premio» es el premio de la póliza del período según cada compañía. «s/d»: sin cotización disponible ese año. Valores tomados de la planilla de cotizaciones por patente.</p>
+ </div>
+
  <!-- P4 fuentes -->
  <div class="panel" id="p4">
   <h2 class="sec">Fuentes y método</h2>
@@ -250,7 +279,7 @@ tbody tr:hover{background:var(--ls-tint)}
    <div class="grid2">
     <div>
      <h3>Fuentes</h3>
-     <p>Cotizaciones <b>San Cristóbal</b> N° 01-05-14453929 (FLETES), 01-05-14454055 (CASA OSLE) y 01-05-14454349 (CUYANO), emitidas el 17/07/2026, con vigencia 06/08/2026 – 06/02/2027.<br>Cotización <b>La Segunda</b> intermediada por <b>Marsh</b> (planilla comparativa OSLE), con asistencia de <b>MM Asistencias S.A.</b> 24/7.</p>
+     <p>Cotizaciones <b>San Cristóbal</b> N° 01-05-14453929 (FLETES), 01-05-14454055 (CASA OSLE) y 01-05-14454349 (CUYANO), emitidas el 17/07/2026, con vigencia 06/08/2026 – 06/02/2027.<br>Cotización <b>La Segunda</b> intermediada por <b>Marsh</b> (planilla comparativa OSLE), con asistencia de <b>MM Asistencias S.A.</b> 24/7.<br>Pestaña <b>Histórico 2025–2027</b>: planilla interna de cuotas mensuales por patente (vehículos particulares) — San Cristóbal 2025 y 2026, La Segunda 2027.</p>
     </div>
     <div>
      <h3>Método</h3>
@@ -302,4 +331,54 @@ function render(){
  document.getElementById("sumtot").textContent=money(r.reduce((a,x)=>a+(x.suma||0),0));
 }
 render();
+// historico 2025-2027 (cuota mensual: c25/c26 San Cristóbal, c27 La Segunda · p26/p27 premio de póliza)
+const HIST=[
+{pat:"AA495CM",dueno:"Soledad Osle",veh:"CHRYSLER JEEP RENEGADE 2.4 4X4 LONGITUDE AT",anio:2016,c25:67595.22,c26:99266.60,p26:786789.45,c27:66317.75,p27:1051272.15},
+{pat:"AC333LF",dueno:"Francisco Osle",veh:"PEUGEOT 208 1.6 GT",anio:2018,c25:58742.57,c26:83949.45,p26:665385.36,c27:56988.25,p27:903380.37},
+{pat:"AC514WB",dueno:"Geronimo Gonzalez",veh:null,anio:null,c25:null,c26:84502.36,p26:669767.69,c27:61467.08,p27:974379.15},
+{pat:"AC637CH",dueno:"Antonio Buonsignore",veh:"HONDA HR-V",anio:2018,c25:0,c26:171292.84,p26:1357671.09,c27:128285.24,p27:2033583.76},
+{pat:"AD355IY",dueno:"Eduardo Osle",veh:"CHEVROLET TRAIL BLAZER 2.8 4X4 LTZ AUT L/17",anio:2019,c25:75450.19,c26:106415.43,p26:843451.25,c27:83810.58,p27:1328569.25},
+{pat:"AD627ES",dueno:"Eduardo Osle",veh:"CHRYSLER JEEP RENEGADE 1.8 4X2 LONGITUDE AT",anio:2019,c25:60101.26,c26:177204.57,p26:1404527.62,c27:120393.25,p27:1908479.51},
+{pat:"AD999GU",dueno:"Soledad Osle",veh:"KIA CARNIVAL EX 2.2 AT CRDI",anio:2020,c25:104561.32,c26:156225.19,p26:1238244.61,c27:115464.26,p27:1830344.96},
+{pat:"AE136BV",dueno:"Luis Osle",veh:"FORD ECO SPORT 1.5 SE AUT L/18",anio:2020,c25:102010.94,c26:133754.12,p26:1060138.32,c27:106780.95,p27:1692696.69},
+{pat:"AE276BY",dueno:"Rodrigo Osle",veh:"TOYOTA ETIOS 1.5 5 PTAS XLS 6MT L/18",anio:2020,c25:104156.00,c26:145922.96,p26:1156588.83,c27:101306.32,p27:1605912.63},
+{pat:"AE291SV",dueno:"Victoria Osle",veh:"VOLKSWAGEN POLO 1.6 L16 COM 4P TIP",anio:2020,c25:83250.37,c26:116754.47,p26:925398.74,c27:94695.05,p27:1501110.36},
+{pat:"AE565GA",dueno:"Soledad Osle",veh:"TOYOTA YARIS 1.5 5 PTAS XLS PACK CVT L/20",anio:2020,c25:60419.11,c26:89754.11,p26:711393.19,c27:68316.93,p27:1082963.26},
+{pat:"AE682UG",dueno:"Marcelo Kelman",veh:"PEUGEOT 208 L/20 1.6 FELINE TIPTRONIC",anio:2021,c25:105664.74,c26:154046.98,p26:1220980.04,c27:108712.64,p27:1723317.86},
+{pat:"AE697BG",dueno:"Eduardo Osle",veh:"HYUNDAI CRETA 1.6 SAFETY AT PLUS",anio:2021,c25:63312.70,c26:93701.02,p26:742676.51,c27:82144.59,p27:1302160.02},
+{pat:"AE832YI",dueno:"Soledad Osle",veh:"VOLKSWAGEN AMAROK DC V6",anio:null,c25:106269.99,c26:184323.10,p26:486983.10,c27:107008.40,p27:1696302.21},
+{pat:"AF196IT",dueno:"Susana Sanchez",veh:"TOYOTA RAV 4 2.5 5P L/19 4X4 LIM.HYBRID",anio:2021,c25:82998.96,c26:124385.13,p26:985879.51,c27:114631.27,p27:1817140.34},
+{pat:"AF411EM",dueno:"Pilar Osle",veh:"FIAT ARGO 1.8 PRECIS PK PREMIUM AT L/21",anio:2022,c25:99792.11,c26:144035.48,p26:1141628.60,c27:99778.03,p27:1581686.14},
+{pat:"AF575NR",dueno:"Javier Gutierrez",veh:"NISSAN FRONTIER L/22 2.3 DC 4X4",anio:2022,c25:96331.08,c26:130593.03,p26:1035083.44,c27:44576.66,p27:706631.34},
+{pat:"AF655YP",dueno:"Daniel Longo",veh:"RENAULT SANDERO PH2 INTENSE 1.6 TIPO S 5P",anio:2022,c25:100440.78,c26:139061.91,p26:1102207.97,c27:94464.55,p27:1497456.54},
+{pat:"AG035HQ",dueno:"Arenas Velasco Constanza",veh:"TOYOTA YARIS 1.5 5 PTAS S CVT L/22",anio:2023,c25:114241.71,c26:160416.47,p26:1271464.75,c27:122116.27,p27:1935792.95},
+{pat:"AG498NM",dueno:"Luis Osle",veh:"TOYOTA COROLLA CROSS 1.8 XEI HV E-CVT",anio:2024,c25:123601.79,c26:187862.09,p26:1488999.39,c27:145075.30,p27:2299740.48},
+{pat:"AH507IK",dueno:"Milagros Osle",veh:"KIA K3 1.6 CROSS GT-LINE AUT",anio:2025,c25:111699.51,c26:187900.09,p26:1489300.59,c27:130358.34,p27:2066446.56},
+{pat:"MKC540",dueno:"Francisco Osle",veh:"VOLKSWAGEN BORA 1.8 T. HIGHLINE L/07",anio:2013,c25:61398.81,c26:98992.47,p26:784616.67,c27:60007.84,p27:951247.13},
+{pat:"POW659",dueno:"Soledad Osle",veh:"TOYOTA HILUX L/16 2.8 DC 4X4 TDI SR",anio:2016,c25:106269.99,c26:152516.85,p26:1208852.47,c27:86183.60,p27:1366186.60},
+{pat:"UQO423",dueno:"Aurelio Damian Osle",veh:"CHRYSLER COMANCHE",anio:1991,c25:41183.55,c26:67683.55,p26:536461.40,c27:23192.70,p27:367651.72}
+];
+const HMAX=Math.max(...HIST.flatMap(x=>[x.c25||0,x.c26||0,x.c27||0]));
+const t26=HIST.reduce((a,x)=>a+(x.c26||0),0), t27=HIST.reduce((a,x)=>a+(x.c27||0),0);
+document.getElementById("hsum").innerHTML=`
+ <div><div class="hv tnum">${HIST.length}</div><div class="hl">vehículos particulares</div></div>
+ <div><div class="hv tnum" style="color:var(--sc-d)">${money(t26)}</div><div class="hl">cuota mensual total 2026 · San Cristóbal</div></div>
+ <div><div class="hv tnum" style="color:var(--ls-d)">${money(t27)}</div><div class="hl">cuota mensual total 2027 · La Segunda</div></div>
+ <div><div class="hv tnum" style="color:var(--ls-d)">▼ ${Math.round((1-t27/t26)*100)}%</div><div class="hl">ahorro mensual ${money(t26-t27)}</div></div>`;
+const hbar=(lbl,v,cls,col)=>`<div class="trk"><span class="w">${lbl}</span><div class="rl">${v?`<div class="fl ${cls}" style="width:${(v/HMAX*100).toFixed(1)}%"></div>`:""}</div><span class="vl tnum" style="color:${col}">${v?money(v):"s/d"}</span></div>`;
+function hrender(){
+ const hq=(document.getElementById("hq").value||"").toLowerCase().trim();
+ const rows=HIST.filter(x=>!hq||((x.pat+" "+(x.veh||"")+" "+x.dueno).toLowerCase().includes(hq)));
+ document.getElementById("hist").innerHTML=rows.map(x=>{
+  const d=x.c26&&x.c27?Math.round((1-x.c27/x.c26)*100):null;
+  const badge=d===null?"":(d>=0?`<span class="sv">▼ ${d}% en 2027</span>`:`<span class="sv up">▲ ${-d}% en 2027</span>`);
+  return `<div class="barrow"><div class="top2"><div><span class="emp">${x.veh||"Vehículo s/d"}</span><span class="pat2">${x.pat}${x.anio?" · "+x.anio:""} · ${x.dueno}</span></div>${badge}</div>
+  ${hbar("SC 2025",x.c25,"f25","#6E9AD2")}
+  ${hbar("SC 2026",x.c26,"fsc","var(--sc-d)")}
+  ${hbar("LS 2027",x.c27,"fls","var(--ls-d)")}
+  <div class="premios">Premio de póliza · 2026: ${x.p26?money(x.p26):"s/d"} · 2027: ${x.p27?money(x.p27):"s/d"}</div></div>`;
+ }).join("")||`<div style="padding:26px 20px;text-align:center;color:var(--mut);font-size:13px">Sin resultados para esa búsqueda</div>`;
+}
+document.getElementById("hq").addEventListener("input",hrender);
+hrender();
 </script></body></html>
