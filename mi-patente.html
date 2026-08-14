@@ -85,6 +85,14 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);l
 .ctab .r{text-align:right;font-weight:700;white-space:nowrap}
 .ctab tr.fq td{background:var(--ls-tint);font-weight:700;color:var(--ls-d)}
 .warn{margin:14px 22px;background:#fdf6e3;border:1px solid #ecd9a0;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#7a5c00}
+/* descargas */
+.dlrow{display:flex;gap:12px;flex-wrap:wrap}
+.dl{flex:1;min-width:210px;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;text-decoration:none;font-weight:800;font-size:13.5px;border:2px solid var(--line2);background:#fff;color:var(--ink)}
+.dl:hover{border-color:var(--mut)}
+.dl.main{background:var(--ls);border-color:var(--ls);color:#fff;box-shadow:0 4px 14px rgba(225,26,70,.25)}
+.dl.main:hover{background:var(--ls-d);border-color:var(--ls-d)}
+.dl .ic{font-size:22px;line-height:1}
+.dl .l2{font-size:10.5px;font-weight:600;opacity:.75;margin-top:2px}
 .foot{color:var(--mut);font-size:11.5px;margin-top:22px;line-height:1.7;text-align:center}
 .printbar{padding:16px 22px;text-align:center}
 @media(max-width:560px){
@@ -235,6 +243,13 @@ function render(x){
   </div>
  </div>
  <div class="sect">
+  <h3>Tus documentos</h3>
+  <div class="dlrow">
+   <a class="dl main" href="polizas/${x.pat}.pdf" target="_blank" rel="noopener"><span class="ic">📄</span><span>Póliza individual<div class="l2">PDF · certificado completo de tu vehículo</div></span></a>
+   <a class="dl" href="tarjetas/${x.pat}.pdf" target="_blank" rel="noopener"><span class="ic">🪪</span><span>Tarjeta de circulación<div class="l2">PDF · llevala en el auto o en el celular</div></span></a>
+  </div>
+ </div>
+ <div class="sect">
   <h3>Coberturas y sumas aseguradas</h3>
   <div style="overflow:auto"><table class="ctab"><thead><tr><th>Cobertura</th><th class="r">Suma</th><th class="r">Ajuste</th></tr></thead><tbody>
   ${c.cob.map(r=>`<tr${r.c.includes("franquicia")?' class="fq"':''}><td>${r.c.charAt(0)+r.c.slice(1).toLowerCase()}</td><td class="r tnum">$ ${r.suma}</td><td class="r">${r.aj||"—"}</td></tr>`).join("")}
@@ -242,7 +257,7 @@ function render(x){
   <div class="foot-n">Ajuste automático de suma asegurada: 30% según cláusula. Sumas expresadas en pesos.</div>
  </div>`;
  }else{
-  html+=`<div class="warn">El detalle de la póliza de esta patente está emitido por otra razón social (FLETES S.A.). Los valores de ahorro de arriba son los de la planilla de renovación — para el certificado completo consultá en administración.</div>`;
+  html+=`<div class="warn">El detalle de la póliza de esta patente está emitido por otra razón social (FLETES S.A.). Los valores de ahorro de arriba son los de la planilla de renovación — para el certificado completo y los documentos de esta unidad consultá en administración.</div>`;
  }
 
  html+=`<div class="printbar"><a class="btn" href="javascript:window.print()">🖨 Imprimir / guardar PDF de mi resumen</a></div>`;
